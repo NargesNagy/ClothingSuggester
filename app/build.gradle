@@ -51,4 +51,6 @@ dependencies {
     implementation "com.squareup.okhttp3:okhttp:$okhttp_version"
     //gson
     implementation 'com.google.code.gson:gson:2.9.0'
+    // location
+    implementation 'com.google.android.gms:play-services-location:19.0.1'
 }
