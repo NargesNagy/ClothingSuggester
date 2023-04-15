@@ -40,6 +40,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+
     private fun geWeatherFromNetworkUsingOkhtto(lat: Double, long: Double) {
 // https://api.openweathermap.org/data/2.5/onecall?lat=33.44&lon=-94.04&appid=fccb113f3db977a207025c87caa649c0
 
@@ -49,13 +50,13 @@ class MainActivity : AppCompatActivity() {
                .host("api.openweathermap.org/data/2.5/onecall")
                .addQueryParameter("lat" , lat.toString())
                .addQueryParameter("lon", long.toString())
-               .addQueryParameter("appid", "fccb113f3db977a207025c87caa649c0")
+               .addQueryParameter("appid", BuildConfig.API_KEY)
                .build()
-
 */
 
+        val url  = "https://api.openweathermap.org/data/2.5/onecall?lat=$lat&lon=$long&appid=${BuildConfig.API_KEY}"
         val requset = Request.Builder()
-            .url("https://api.openweathermap.org/data/2.5/onecall?lat=$lat&lon=$long&appid=fccb113f3db977a207025c87caa649c0")
+            .url(url)
             .build()
         client.newCall(requset).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {

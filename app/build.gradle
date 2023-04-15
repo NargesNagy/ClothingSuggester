@@ -3,6 +3,13 @@ plugins {
     id 'org.jetbrains.kotlin.android'
 }
 
+File secretsFile = rootProject.file("secrets.properties")
+Properties secretsProperties = new Properties()
+
+if (secretsFile.exists()) {
+    secretsProperties.load(new FileInputStream(secretsFile))
+}
+
 android {
     namespace 'com.example.clothingsuggester'
     compileSdk 33
@@ -13,6 +20,7 @@ android {
         targetSdk 33
         versionCode 1
         versionName "1.0"
+        buildConfigField("String", "API_KEY", secretsProperties.getProperty("API_KEY", System.getenv("API_KEY")))
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
