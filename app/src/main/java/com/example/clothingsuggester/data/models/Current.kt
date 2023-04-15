@@ -9,7 +9,7 @@ data class Current(
     val pressure : Int,
     val humidity : Int,
     val dew_point : Double,
-    val uvi : Int,
+    val uvi : Double,
     val clouds : Int,
     val visibility : Int,
     val wind_speed : Double,
