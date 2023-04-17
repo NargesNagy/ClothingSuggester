@@ -2,7 +2,6 @@ package com.example.clothingsuggester
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -13,9 +12,8 @@ import android.os.Bundle
 import android.os.Looper
 import android.provider.Settings
 import android.util.Log
-import android.widget.Toast
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
+import com.example.clothingsuggester.data.ClothesImages
 import com.example.clothingsuggester.data.models.WeatherResponse
 import com.google.android.gms.location.*
 import com.google.gson.Gson
@@ -40,9 +38,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-
     private fun geWeatherFromNetworkUsingOkhtto(lat: Double, long: Double) {
-// https://api.openweathermap.org/data/2.5/onecall?lat=33.44&lon=-94.04&appid=fccb113f3db977a207025c87caa649c0
 
 /*
            val url = HttpUrl.Builder()
@@ -69,6 +65,40 @@ class MainActivity : AppCompatActivity() {
                 response.body?.string().toString().let { jsonString ->
                     val result = Gson().fromJson(jsonString, WeatherResponse::class.java)
                     Log.i("TAG", "onResponse: ${result.current.temp}")
+
+                    ////
+
+                    val timezone = result.timezone
+                    val weather = result.current.temp.toInt() //.toString() +"°c"
+                    val weatherInCilisuis = weather - 273.15
+                    val im = ClothesImages(weatherInCilisuis.toInt())
+                    val list = im.ClothesList()
+                    Log.i("TAG", "onResponseeeeeeeeeeeeeee: $weather")
+                    Log.i("TAG", "onResponseeeeeeeeeeeeeee: $list")
+/*
+                    var icon = weather.current.weather?.get(0)?.icon
+                    when (icon){
+                        "01d" -> binding.showimageView.setImageResource(com.google.android.gms.location.R.drawable.cloud_sun2)
+                        "02d" -> binding.showimageView.setImageResource(com.google.android.gms.location.R.drawable.cloud2)
+                        "03d" -> binding.showimageView.setImageResource(com.google.android.gms.location.R.drawable.blackcloud_lighting)
+                        "04d" -> binding.showimageView.setImageResource(com.google.android.gms.location.R.drawable.cloud2)
+                        "09d" -> binding.showimageView.setImageResource(com.google.android.gms.location.R.drawable.cloud_rain)
+                        "10d" -> binding.showimageView.setImageResource(com.google.android.gms.location.R.drawable.cloud_sun2)
+                        "11d" -> binding.showimageView.setImageResource(com.google.android.gms.location.R.drawable.clouds__rain_sun)
+                        "13d" -> binding.showimageView.setImageResource(com.google.android.gms.location.R.drawable.clouds_sun)
+                        "50d" -> binding.showimageView.setImageResource(com.google.android.gms.location.R.drawable.darkcloud_rain)
+                        "01n" -> binding.showimageView.setImageResource(com.google.android.gms.location.R.drawable.stormy)
+                        "02n" -> binding.showimageView.setImageResource(com.google.android.gms.location.R.drawable.cloud2)
+                        "03n" -> binding.showimageView.setImageResource(com.google.android.gms.location.R.drawable.cloud_sun2)
+                        "04n" -> binding.showimageView.setImageResource(com.google.android.gms.location.R.drawable.cloud2)
+                        "09n" -> binding.showimageView.setImageResource(com.google.android.gms.location.R.drawable.cloud_lighting)
+                        "10n" -> binding.showimageView.setImageResource(com.google.android.gms.location.R.drawable.stormy)
+                        "11n" -> binding.showimageView.setImageResource(com.google.android.gms.location.R.drawable.stormy)
+                        "13n" -> binding.showimageView.setImageResource(com.google.android.gms.location.R.drawable.rain)
+                        "50n" -> binding.showimageView.setImageResource(com.google.android.gms.location.R.drawable.rain)
+
+                    }
+*/
 
                 }
             }
