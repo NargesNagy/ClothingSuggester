@@ -1,4 +1,4 @@
-package com.example.clothingsuggester
+package com.example.clothingsuggester.ui
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -7,14 +7,17 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Looper
 import android.provider.Settings
 import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import com.example.clothingsuggester.BuildConfig
+import com.example.clothingsuggester.R
 import com.example.clothingsuggester.data.ClothesImages
 import com.example.clothingsuggester.data.models.WeatherResponse
+import com.example.clothingsuggester.data.source.RemoteDataSource
 import com.google.android.gms.location.*
 import com.google.gson.Gson
 import okhttp3.*
@@ -23,9 +26,10 @@ import java.io.IOException
 class MainActivity : AppCompatActivity() {
 
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
-    var lattitude: Double = 33.44
-    var longtude: Double = -94.04
-    val client = OkHttpClient()
+    private var lattitude: Double = 33.44
+    private var longtude: Double = -94.04
+    private val client = OkHttpClient()
+    private val remoteDataSource = RemoteDataSource()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,9 +38,56 @@ class MainActivity : AppCompatActivity() {
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
         getCurrentLocation()
         Log.i("TAG", "getLocations: ${lattitude} ggggggggggg ${longtude}")
-        //geWeatherFromNetworkUsingOkhtto(lattitude, longtude)
+//        remoteDataSource.geWeatherFromNetworkUsingOkhtto(
+//            lattitude,
+//            longtude,
+//            ::onSuccessResponse,
+//            ::onFailerResponse
+//        )
+        geWeatherFromNetworkUsingOkhtto(longtude,lattitude)
 
     }
+
+    private fun onSuccessResponse(response: WeatherResponse) {
+//        val timezone = response.timezone
+//        val weather = response.current.temp.toInt() //.toString() +"°c"
+//        val weatherInCilisuis = weather - 273.15
+//        val im = ClothesImages(weatherInCilisuis.toInt())
+//        val list = im.ClothesList()
+//        Log.i("TAG", "onResponseeeeeeeeeeeeeee: $weather")
+//        Log.i("TAG", "onResponseeeeeeeeeeeeeee: $list")
+///*
+//                    var icon = weather.current.weather?.get(0)?.icon
+//                    when (icon){
+//                        "01d" -> binding.showimageView.setImageResource(com.google.android.gms.location.R.drawable.cloud_sun2)
+//                        "02d" -> binding.showimageView.setImageResource(com.google.android.gms.location.R.drawable.cloud2)
+//                        "03d" -> binding.showimageView.setImageResource(com.google.android.gms.location.R.drawable.blackcloud_lighting)
+//                        "04d" -> binding.showimageView.setImageResource(com.google.android.gms.location.R.drawable.cloud2)
+//                        "09d" -> binding.showimageView.setImageResource(com.google.android.gms.location.R.drawable.cloud_rain)
+//                        "10d" -> binding.showimageView.setImageResource(com.google.android.gms.location.R.drawable.cloud_sun2)
+//                        "11d" -> binding.showimageView.setImageResource(com.google.android.gms.location.R.drawable.clouds__rain_sun)
+//                        "13d" -> binding.showimageView.setImageResource(com.google.android.gms.location.R.drawable.clouds_sun)
+//                        "50d" -> binding.showimageView.setImageResource(com.google.android.gms.location.R.drawable.darkcloud_rain)
+//                        "01n" -> binding.showimageView.setImageResource(com.google.android.gms.location.R.drawable.stormy)
+//                        "02n" -> binding.showimageView.setImageResource(com.google.android.gms.location.R.drawable.cloud2)
+//                        "03n" -> binding.showimageView.setImageResource(com.google.android.gms.location.R.drawable.cloud_sun2)
+//                        "04n" -> binding.showimageView.setImageResource(com.google.android.gms.location.R.drawable.cloud2)
+//                        "09n" -> binding.showimageView.setImageResource(com.google.android.gms.location.R.drawable.cloud_lighting)
+//                        "10n" -> binding.showimageView.setImageResource(com.google.android.gms.location.R.drawable.stormy)
+//                        "11n" -> binding.showimageView.setImageResource(com.google.android.gms.location.R.drawable.stormy)
+//                        "13n" -> binding.showimageView.setImageResource(com.google.android.gms.location.R.drawable.rain)
+//                        "50n" -> binding.showimageView.setImageResource(com.google.android.gms.location.R.drawable.rain)
+//
+//                    }
+//*/
+
+    }
+
+    private fun onFailerResponse(error: Throwable) {
+        Log.i("TAG", "onFailure: ${error.message}")
+
+    }
+
 
     private fun geWeatherFromNetworkUsingOkhtto(lat: Double, long: Double) {
 
@@ -50,7 +101,8 @@ class MainActivity : AppCompatActivity() {
                .build()
 */
 
-        val url  = "https://api.openweathermap.org/data/2.5/onecall?lat=$lat&lon=$long&appid=${BuildConfig.API_KEY}"
+        val url =
+            "https://api.openweathermap.org/data/2.5/onecall?lat=$lat&lon=$long&appid=${BuildConfig.API_KEY}"
         val requset = Request.Builder()
             .url(url)
             .build()
@@ -64,17 +116,17 @@ class MainActivity : AppCompatActivity() {
 
                 response.body?.string().toString().let { jsonString ->
                     val result = Gson().fromJson(jsonString, WeatherResponse::class.java)
-                    Log.i("TAG", "onResponse: ${result.current.temp}")
+//                    Log.i("TAG", "onResponse: ${result.current.temp}")
 
                     ////
 
                     val timezone = result.timezone
-                    val weather = result.current.temp.toInt() //.toString() +"°c"
-                    val weatherInCilisuis = weather - 273.15
-                    val im = ClothesImages(weatherInCilisuis.toInt())
-                    val list = im.ClothesList()
-                    Log.i("TAG", "onResponseeeeeeeeeeeeeee: $weather")
-                    Log.i("TAG", "onResponseeeeeeeeeeeeeee: $list")
+//                    val weather = result.current.temp.toInt() //.toString() +"°c"
+  //                  val weatherInCilisuis = weather - 273.15
+    //                val im = ClothesImages(weatherInCilisuis.toInt())
+      //              val list = im.ClothesList()
+                    Log.i("TAG", "onResponseeeeeeeeeeeeeee: $timezone")
+        //            Log.i("TAG", "onResponseeeeeeeeeeeeeee: $list")
 /*
                     var icon = weather.current.weather?.get(0)?.icon
                     when (icon){
@@ -107,6 +159,7 @@ class MainActivity : AppCompatActivity() {
 
 
     }
+
 
     // location
 
@@ -195,8 +248,13 @@ class MainActivity : AppCompatActivity() {
                 lattitude = location.latitude
                 longtude = location.longitude
                 Log.i("TAG", "getLocations: ${lattitude} ggggggggggg ${longtude}")
-                geWeatherFromNetworkUsingOkhtto(lattitude, longtude)
-
+                //  geWeatherFromNetworkUsingOkhtto(lattitude, longtude)
+//                remoteDataSource.geWeatherFromNetworkUsingOkhtto(
+//                    lattitude,
+//                    longtude,
+//                    ::onSuccessResponse,
+//                    ::onFailerResponse
+//                )
             }
         }
     }
@@ -229,8 +287,13 @@ class MainActivity : AppCompatActivity() {
             longtude = mLastLocation.longitude
 
             Log.i("TAG", "onLocationResult: ${lattitude} hhh ${longtude}")
-            geWeatherFromNetworkUsingOkhtto(lattitude, longtude)
-
+            // geWeatherFromNetworkUsingOkhtto(lattitude, longtude)
+//            remoteDataSource.geWeatherFromNetworkUsingOkhtto(
+//                lattitude,
+//                longtude,
+//                ::onSuccessResponse,
+//                ::onFailerResponse
+//            )
         }
     }
 
