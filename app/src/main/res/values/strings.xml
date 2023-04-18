@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">ClothingSuggester</string>
+    <string name="Pressure">Pressure</string>
+    <string name="humidity">Humidity</string>
+    <string name="wind">Wind</string>
+    <string name="cloud">Cloud</string>
+    <string name="ultraViolit">Ultra Violit</string>
+    <string name="visibility">Visibility</string>
 </resources>
