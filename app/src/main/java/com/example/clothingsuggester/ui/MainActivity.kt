@@ -18,13 +18,17 @@ import com.example.clothingsuggester.R
 import com.example.clothingsuggester.data.ClothesImages
 import com.example.clothingsuggester.data.models.WeatherResponse
 import com.example.clothingsuggester.data.source.RemoteDataSource
+import com.example.clothingsuggester.databinding.ActivityMainBinding
 import com.example.clothingsuggester.utils.Constant
 import com.google.android.gms.location.*
 import okhttp3.*
+import java.text.SimpleDateFormat
+import java.util.*
 import kotlin.random.Random
 
 class MainActivity : AppCompatActivity() {
 
+    lateinit var binding : ActivityMainBinding
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private var lattitude: Double = 33.44
     private var longtude: Double = -94.04
@@ -34,48 +38,68 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
         getCurrentLocation()
         getRandomImage()
         saveImageofTheDay(getRandomImage())
         getImageofTheDay()
+
+        binding.imageClothes.setImageResource(getRandomImage())
+
     }
 
     private fun onSuccessResponse(response: WeatherResponse) {
-        val timezone = response.timezone
-        val weather = response.current.temp.toInt() //.toString() +"°c"
-        val weatherInCilisuis = weather - 273.15
-        val im = ClothesImages(weatherInCilisuis.toInt())
-        val list = im.ClothesList()
-        Log.i("TAG", "onResponseeeeeeeeeeeeeee: $weather")
-        Log.i("TAG", "onResponseeeeeeeeeeeeeee: $list")
-/*
-                    var icon = weather.current.weather?.get(0)?.icon
-                    when (icon){
-                        "01d" -> binding.showimageView.setImageResource(com.google.android.gms.location.R.drawable.cloud_sun2)
-                        "02d" -> binding.showimageView.setImageResource(com.google.android.gms.location.R.drawable.cloud2)
-                        "03d" -> binding.showimageView.setImageResource(com.google.android.gms.location.R.drawable.blackcloud_lighting)
-                        "04d" -> binding.showimageView.setImageResource(com.google.android.gms.location.R.drawable.cloud2)
-                        "09d" -> binding.showimageView.setImageResource(com.google.android.gms.location.R.drawable.cloud_rain)
-                        "10d" -> binding.showimageView.setImageResource(com.google.android.gms.location.R.drawable.cloud_sun2)
-                        "11d" -> binding.showimageView.setImageResource(com.google.android.gms.location.R.drawable.clouds__rain_sun)
-                        "13d" -> binding.showimageView.setImageResource(com.google.android.gms.location.R.drawable.clouds_sun)
-                        "50d" -> binding.showimageView.setImageResource(com.google.android.gms.location.R.drawable.darkcloud_rain)
-                        "01n" -> binding.showimageView.setImageResource(com.google.android.gms.location.R.drawable.stormy)
-                        "02n" -> binding.showimageView.setImageResource(com.google.android.gms.location.R.drawable.cloud2)
-                        "03n" -> binding.showimageView.setImageResource(com.google.android.gms.location.R.drawable.cloud_sun2)
-                        "04n" -> binding.showimageView.setImageResource(com.google.android.gms.location.R.drawable.cloud2)
-                        "09n" -> binding.showimageView.setImageResource(com.google.android.gms.location.R.drawable.cloud_lighting)
-                        "10n" -> binding.showimageView.setImageResource(com.google.android.gms.location.R.drawable.stormy)
-                        "11n" -> binding.showimageView.setImageResource(com.google.android.gms.location.R.drawable.stormy)
-                        "13n" -> binding.showimageView.setImageResource(com.google.android.gms.location.R.drawable.rain)
-                        "50n" -> binding.showimageView.setImageResource(com.google.android.gms.location.R.drawable.rain)
 
-                    }
-*/
+        runOnUiThread {
+            val timezone = response.timezone
+            val weather = response.current.temp.toInt() //.toString() +"°c"
+            val weatherInCilisuis = weather - 273.15
+            val im = ClothesImages(weatherInCilisuis.toInt())
+            val list = im.ClothesList()
+            Log.i("TAG", "onResponseeeeeeeeeeeeeee: $weather")
+            Log.i("TAG", "onResponseeeeeeeeeeeeeee: $list")
 
+            binding.textCountryName.text = timezone
+
+
+            Log.i("TAG", "onCreateView: ${response.current.weather?.get(0)?.icon}")
+
+            val formatedDate: String =
+                SimpleDateFormat("EEE, d MMM yyyy ", Locale.ENGLISH).format(Date())
+            binding.textDate.text = formatedDate
+            binding.textTemperature.text = (response.current.temp.toInt()-273.5).toString() + "°C"
+
+
+            var icon = response.current.weather?.get(0)?.icon
+            when (icon) {
+                "01d" -> binding.imageWeather.setImageResource(R.drawable.cloud_sun2)
+                "02d" -> binding.imageWeather.setImageResource(R.drawable.cloud2)
+                "03d" -> binding.imageWeather.setImageResource(R.drawable.blackcloud_lighting)
+                "04d" -> binding.imageWeather.setImageResource(R.drawable.cloud2)
+                "09d" -> binding.imageWeather.setImageResource(R.drawable.cloud_rain)
+                "10d" -> binding.imageWeather.setImageResource(R.drawable.cloud_sun2)
+                "11d" -> binding.imageWeather.setImageResource(R.drawable.clouds__rain_sun)
+                "13d" -> binding.imageWeather.setImageResource(R.drawable.clouds_sun)
+                "50d" -> binding.imageWeather.setImageResource(R.drawable.darkcloud_rain)
+                "01n" -> binding.imageWeather.setImageResource(R.drawable.stormy)
+                "02n" -> binding.imageWeather.setImageResource(R.drawable.cloud2)
+                "03n" -> binding.imageWeather.setImageResource(R.drawable.cloud_sun2)
+                "04n" -> binding.imageWeather.setImageResource(R.drawable.cloud2)
+                "09n" -> binding.imageWeather.setImageResource(R.drawable.cloud_lighting)
+                "10n" -> binding.imageWeather.setImageResource(R.drawable.stormy)
+                "11n" -> binding.imageWeather.setImageResource(R.drawable.stormy)
+                "13n" -> binding.imageWeather.setImageResource(R.drawable.rain)
+                "50n" -> binding.imageWeather.setImageResource(R.drawable.rain)
+
+            }
+
+            binding.textCloudValue.text = response.daily?.get(0)?.pressure.toString() + " hpa"
+            binding.textHumidityValue.text = response.daily?.get(0)?.humidity.toString() + " %"
+            binding.textWindValue.text = response.daily?.get(0)?.wind_speed.toString() + " m/s"
+        }
     }
 
     private fun onFailerResponse(error: Throwable) {
