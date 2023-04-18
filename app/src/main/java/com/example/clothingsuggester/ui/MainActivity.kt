@@ -46,10 +46,9 @@ class MainActivity : AppCompatActivity() {
         sharedPreference = this.getSharedPreferences(Constant.SHARED_PREFERINCES_NAME, MODE_PRIVATE)
         getCurrentLocation()
         getRandomImage()
-        saveImageofTheDay(getRandomImage())
         getImageofTheDay()
 
-        binding.imageClothes.setImageResource(getImageofTheDay())
+        binding.imageClothes.setImageResource(getImageofTheDay().first)
 
     }
 
@@ -101,6 +100,10 @@ class MainActivity : AppCompatActivity() {
             binding.textCloudValue.text = response.daily?.get(0)?.pressure.toString() + " hpa"
             binding.textHumidityValue.text = response.daily?.get(0)?.humidity.toString() + " %"
             binding.textWindValue.text = response.daily?.get(0)?.wind_speed.toString() + " m/s"
+
+            if (getImageofTheDay().second != formatedDate){
+                saveImageofTheDay(getRandomImage(), formatedDate)
+            }
         }
     }
 
@@ -115,26 +118,27 @@ class MainActivity : AppCompatActivity() {
         val randomIndex = Random.nextInt(list.size - 1)
         val randomImage = list[randomIndex]
         Log.i("TAG", "randomImageeeeeeeeeeee: $randomImage")
-        saveImageofTheDay(randomImage)
         return randomImage
     }
 
-    private fun saveImageofTheDay(i: Int) {
+    private fun saveImageofTheDay(image: Int, date: String ) {
         val sharedPreference =
             this.getSharedPreferences(Constant.SHARED_PREFERINCES_NAME, MODE_PRIVATE)
         val editor = sharedPreference.edit()
-        editor.putInt(Constant.SHARED_CLOTHES_KEY, i)
+        editor.putInt(Constant.SHARED_CLOTHES_KEY, image)
+        editor.putString(Constant.SHARED_DATE_KEY, date)
         editor.apply()
-        Log.i("TAG", "imimimmm: $i")
+        Log.i("TAG", "imimimmm: $image")
 
     }
 
-    private fun getImageofTheDay(): Int {
+    private fun getImageofTheDay(): Pair<Int, String?> {
         val sharedPreference =
             this.getSharedPreferences(Constant.SHARED_PREFERINCES_NAME, MODE_PRIVATE)
         val image = sharedPreference.getInt(Constant.SHARED_CLOTHES_KEY, 1)
+        val date = sharedPreference.getString(Constant.SHARED_DATE_KEY, "")
         Log.i("TAG", "immmmmm: $image")
-        return image
+        return Pair(image,date)
     }
 
     // location
