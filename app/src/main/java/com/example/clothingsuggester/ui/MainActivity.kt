@@ -91,6 +91,15 @@ class MainActivity : AppCompatActivity() {
 
             if (getImageofTheDay().second != formatedDate) {
                 saveImageofTheDay(getRandomImage(), formatedDate)
+                /*
+                var randomImage = getRandomImage()
+                if( randomImage == getImageofTheDay().first){
+                    randomImage = getRandomImage()
+                    saveImageofTheDay(randomImage, formatedDate)
+                }else{
+                    saveImageofTheDay(randomImage, formatedDate)
+                }
+                */
             }
         }
     }
@@ -104,7 +113,6 @@ class MainActivity : AppCompatActivity() {
         val list = images.ClothesList()
         val randomIndex = Random.nextInt(list.size - 1)
         val randomImage = list[randomIndex]
-        Log.i("TAG", "randomImageeeeeeeeeeee: $randomImage")
         return randomImage
     }
 
@@ -115,8 +123,6 @@ class MainActivity : AppCompatActivity() {
         editor.putInt(Constant.SHARED_CLOTHES_KEY, image)
         editor.putString(Constant.SHARED_DATE_KEY, date)
         editor.apply()
-        Log.i("TAG", "imimimmm: $image")
-
     }
 
     private fun getImageofTheDay(): Pair<Int, String?> {
@@ -124,7 +130,6 @@ class MainActivity : AppCompatActivity() {
             this.getSharedPreferences(Constant.SHARED_PREFERINCES_NAME, MODE_PRIVATE)
         val image = sharedPreference.getInt(Constant.SHARED_CLOTHES_KEY, 1)
         val date = sharedPreference.getString(Constant.SHARED_DATE_KEY, "")
-        Log.i("TAG", "immmmmm: $image")
         return Pair(image, date)
     }
 
@@ -179,7 +184,6 @@ class MainActivity : AppCompatActivity() {
             if (grantResults.isEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show()
                 getCurrentLocation()
-
             } else {
                 Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show()
             }
@@ -213,7 +217,6 @@ class MainActivity : AppCompatActivity() {
             } else it.apply {
                 lattitude = location.latitude
                 longtude = location.longitude
-                Log.i("TAG", "getLocations: ${lattitude} ggggggggggg ${longtude}")
                 remoteDataSource.getWeatherFromNetworkUsingOkhtto(
                     lattitude,
                     longtude,
@@ -250,8 +253,6 @@ class MainActivity : AppCompatActivity() {
             val mLastLocation = locationResult.lastLocation
             lattitude = mLastLocation.latitude
             longtude = mLastLocation.longitude
-
-            Log.i("TAG", "onLocationResult: ${lattitude} hhh ${longtude}")
             remoteDataSource.getWeatherFromNetworkUsingOkhtto(
                 lattitude,
                 longtude,
