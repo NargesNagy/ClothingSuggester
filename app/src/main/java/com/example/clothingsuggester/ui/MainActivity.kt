@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
@@ -30,24 +31,25 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var binding : ActivityMainBinding
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+    private val client = OkHttpClient()
+    private val remoteDataSource = RemoteDataSource()
     private var lattitude: Double = 33.44
     private var longtude: Double = -94.04
     var clothesWeather = 8
-    private val client = OkHttpClient()
-    private val remoteDataSource = RemoteDataSource()
-
+    private lateinit var sharedPreference : SharedPreferences
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+        sharedPreference = this.getSharedPreferences(Constant.SHARED_PREFERINCES_NAME, MODE_PRIVATE)
         getCurrentLocation()
         getRandomImage()
         saveImageofTheDay(getRandomImage())
         getImageofTheDay()
 
-        binding.imageClothes.setImageResource(getRandomImage())
+        binding.imageClothes.setImageResource(getImageofTheDay())
 
     }
 
@@ -122,6 +124,7 @@ class MainActivity : AppCompatActivity() {
             this.getSharedPreferences(Constant.SHARED_PREFERINCES_NAME, MODE_PRIVATE)
         val editor = sharedPreference.edit()
         editor.putInt(Constant.SHARED_CLOTHES_KEY, i)
+        editor.apply()
         Log.i("TAG", "imimimmm: $i")
 
     }
@@ -129,9 +132,9 @@ class MainActivity : AppCompatActivity() {
     private fun getImageofTheDay(): Int {
         val sharedPreference =
             this.getSharedPreferences(Constant.SHARED_PREFERINCES_NAME, MODE_PRIVATE)
-        val im = sharedPreference.getInt(Constant.SHARED_CLOTHES_KEY, 1)
-        Log.i("TAG", "immmmmm: $im")
-        return im
+        val image = sharedPreference.getInt(Constant.SHARED_CLOTHES_KEY, 1)
+        Log.i("TAG", "immmmmm: $image")
+        return image
     }
 
     // location
