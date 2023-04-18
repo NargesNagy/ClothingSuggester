@@ -29,14 +29,14 @@ import kotlin.random.Random
 
 class MainActivity : AppCompatActivity() {
 
-    lateinit var binding : ActivityMainBinding
+    lateinit var binding: ActivityMainBinding
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private val client = OkHttpClient()
     private val remoteDataSource = RemoteDataSource()
     private var lattitude: Double = 33.44
     private var longtude: Double = -94.04
     var clothesWeather = 8
-    private lateinit var sharedPreference : SharedPreferences
+    private lateinit var sharedPreference: SharedPreferences
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -56,23 +56,8 @@ class MainActivity : AppCompatActivity() {
 
         runOnUiThread {
             val timezone = response.timezone
-            val weather = response.current.temp.toInt() //.toString() +"°c"
-            val weatherInCilisuis = weather - 273.15
-            val im = ClothesImages(weatherInCilisuis.toInt())
-            val list = im.ClothesList()
-            Log.i("TAG", "onResponseeeeeeeeeeeeeee: $weather")
-            Log.i("TAG", "onResponseeeeeeeeeeeeeee: $list")
-
-            binding.textCountryName.text = timezone
-
-
-            Log.i("TAG", "onCreateView: ${response.current.weather?.get(0)?.icon}")
-
             val formatedDate: String =
                 SimpleDateFormat("EEE, d MMM yyyy ", Locale.ENGLISH).format(Date())
-            binding.textDate.text = formatedDate
-            binding.textTemperature.text = (response.current.temp.toInt()-273.5).toString() + "°C"
-
 
             var icon = response.current.weather?.get(0)?.icon
             when (icon) {
@@ -97,11 +82,14 @@ class MainActivity : AppCompatActivity() {
 
             }
 
+            binding.textCountryName.text = timezone
+            binding.textDate.text = formatedDate
+            binding.textTemperature.text = (response.current.temp.toInt() - 273.5).toString() + "°C"
             binding.textCloudValue.text = response.daily?.get(0)?.pressure.toString() + " hpa"
             binding.textHumidityValue.text = response.daily?.get(0)?.humidity.toString() + " %"
             binding.textWindValue.text = response.daily?.get(0)?.wind_speed.toString() + " m/s"
 
-            if (getImageofTheDay().second != formatedDate){
+            if (getImageofTheDay().second != formatedDate) {
                 saveImageofTheDay(getRandomImage(), formatedDate)
             }
         }
@@ -109,7 +97,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun onFailerResponse(error: Throwable) {
         Log.i("TAG", "onFailure: ${error.message}")
-
     }
 
     private fun getRandomImage(): Int {
@@ -121,7 +108,7 @@ class MainActivity : AppCompatActivity() {
         return randomImage
     }
 
-    private fun saveImageofTheDay(image: Int, date: String ) {
+    private fun saveImageofTheDay(image: Int, date: String) {
         val sharedPreference =
             this.getSharedPreferences(Constant.SHARED_PREFERINCES_NAME, MODE_PRIVATE)
         val editor = sharedPreference.edit()
@@ -138,7 +125,7 @@ class MainActivity : AppCompatActivity() {
         val image = sharedPreference.getInt(Constant.SHARED_CLOTHES_KEY, 1)
         val date = sharedPreference.getString(Constant.SHARED_DATE_KEY, "")
         Log.i("TAG", "immmmmm: $image")
-        return Pair(image,date)
+        return Pair(image, date)
     }
 
     // location
