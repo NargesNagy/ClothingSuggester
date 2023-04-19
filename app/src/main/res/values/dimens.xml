@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--Margin dimens-->
+    <dimen name="margin_tiny">4dp</dimen>
+    <dimen name="margin_small">8dp</dimen>
+    <dimen name="margin_medium">16dp</dimen>
+    <dimen name="margin_large">24dp</dimen>
+    <dimen name="margin_giant">32dp</dimen>
+    <dimen name="margin_very_giant">64dp</dimen>
+
+    <!--text dimens-->
+    <dimen name="very_tiny">2dp</dimen>
+    <dimen name="text_tiny">12sp</dimen>
+    <dimen name="text_small">14sp</dimen>
+    <dimen name="text_medium">16sp</dimen>
+    <dimen name="text_large">18sp</dimen>
+    <dimen name="text_giant">20sp</dimen>
+    <dimen name="text_very_giant">24sp</dimen>
+
+    <!--radius dimens-->
+    <dimen name="radius_tiny">4dp</dimen>
+    <dimen name="radius_small">8dp</dimen>
+    <dimen name="radius_semi_medium">12dp</dimen>
+
+    <!--elevation dimens-->
+    <dimen name="elevation_small">4dp</dimen>
+    <dimen name="elevation_semi_medium">8dp</dimen>
+    <dimen name="elevation_medium">12dp</dimen>
+
+</resources>

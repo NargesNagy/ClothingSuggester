@@ -4,10 +4,10 @@ import com.example.clothingsuggester.R
 
 class ClothesImages(val weather: Int) {
 
-    fun ClothesList(): List<Int>{
+    fun getListOfClothesAccordingToTempreture(): List<Int>{
         val list = mutableListOf<Int>()
         when(weather){
-            in 0..15 -> {
+            in MIN_COLD_TEMP..MAX_COLD_TEMP -> {
                 list.add(R.drawable.coat1)
                 list.add(R.drawable.c2)
                 list.add(R.drawable.c3)
@@ -16,7 +16,7 @@ class ClothesImages(val weather: Int) {
                 list.add(R.drawable.coat6)
             }
 
-            in 15..25 -> {
+            in MAX_COLD_TEMP..MEDIUM_TEMP -> {
                 list.add(R.drawable.swee0)
                 list.add(R.drawable.sweet1)
                 list.add(R.drawable.sweet2)
@@ -26,7 +26,7 @@ class ClothesImages(val weather: Int) {
                 list.add(R.drawable.sweet9)
             }
 
-             in 25..40 -> {
+             in MEDIUM_TEMP..HIGH_TEMP -> {
                  list.add(R.drawable.dress)
                  list.add(R.drawable.dress2)
                  list.add(R.drawable.dress4)
@@ -38,6 +38,16 @@ class ClothesImages(val weather: Int) {
         }
 
         return list
+    }
+
+    companion object{
+        const val MIN_COLD_TEMP = 0
+        const val MAX_COLD_TEMP = 15
+        const val MEDIUM_TEMP = 25
+        const val HIGH_TEMP = 40
+
+
+
     }
 
 

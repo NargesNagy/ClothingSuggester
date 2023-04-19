@@ -11,8 +11,8 @@ class RemoteDataSource {
     val client = OkHttpClient()
 
     fun getWeatherFromNetworkUsingOkhtto(
-        lat: Double, long: Double, onSuccessCallback: (response: WeatherResponse) -> Unit,
-        onFailureCallback: (error: Throwable) -> Unit
+        lat: Double, long: Double, onSuccessResponse: (response: WeatherResponse) -> Unit,
+        onFailureResponse: (error: Throwable) -> Unit
     ) {
 
         val url = "${Constant.BASE_URL}?lat=$lat&lon=$long&appid=${BuildConfig.API_KEY}"
@@ -20,15 +20,13 @@ class RemoteDataSource {
 
         client.newCall(requset).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                onFailureCallback(e)
-
+                onFailureResponse(e)
             }
 
             override fun onResponse(call: Call, response: Response) {
-
                 response.body?.string().toString().let { jsonString ->
                     val result = Gson().fromJson(jsonString, WeatherResponse::class.java)
-                    onSuccessCallback(result)
+                    onSuccessResponse(result)
                 }
             }
 

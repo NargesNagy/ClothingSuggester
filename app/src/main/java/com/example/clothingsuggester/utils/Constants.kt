@@ -5,6 +5,4 @@ object Constant {
     const val SHARED_PREFERINCES_NAME = "clothes_shared_prefs"
     const val SHARED_CLOTHES_KEY = "clothes_image"
     const val SHARED_DATE_KEY = "date"
-
-
 }

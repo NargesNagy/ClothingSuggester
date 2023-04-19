@@ -4,8 +4,8 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.location.Geocoder
 import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
@@ -20,41 +20,42 @@ import com.example.clothingsuggester.data.ClothesImages
 import com.example.clothingsuggester.data.models.WeatherResponse
 import com.example.clothingsuggester.data.source.RemoteDataSource
 import com.example.clothingsuggester.databinding.ActivityMainBinding
-import com.example.clothingsuggester.utils.Constant
+import com.example.clothingsuggester.utils.SharedPreferencesUtil
 import com.google.android.gms.location.*
 import okhttp3.*
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.random.Random
 
+
 class MainActivity : AppCompatActivity() {
 
     lateinit var binding: ActivityMainBinding
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
-    private val client = OkHttpClient()
     private val remoteDataSource = RemoteDataSource()
     private var lattitude: Double = 33.44
     private var longtude: Double = -94.04
     var clothesWeather = 8
-    private lateinit var sharedPreference: SharedPreferences
+    private lateinit var sharedPreference: SharedPreferencesUtil
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        setUp()
+    }
+
+    private fun setUp() {
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
-        sharedPreference = this.getSharedPreferences(Constant.SHARED_PREFERINCES_NAME, MODE_PRIVATE)
+        sharedPreference = SharedPreferencesUtil(this)
         getCurrentLocation()
-        getRandomImage()
-        getImageofTheDay()
-
-        binding.imageClothes.setImageResource(getImageofTheDay().first)
-
+        sharedPreference.getImageofTheDay()
     }
 
     private fun onSuccessResponse(response: WeatherResponse) {
 
         runOnUiThread {
+
             val timezone = response.timezone
             val formatedDate: String =
                 SimpleDateFormat("EEE, d MMM yyyy ", Locale.ENGLISH).format(Date())
@@ -81,16 +82,19 @@ class MainActivity : AppCompatActivity() {
                 "50n" -> binding.imageWeather.setImageResource(R.drawable.rain)
 
             }
+            binding.apply {
+                //textCountryName.text = timezone
+                textDate.text = formatedDate
+                textTemperature.text = (response.current.temp.toInt() - 273.5).toString() + "°C"
+                textCloudValue.text = response.daily?.get(0)?.pressure.toString() + " hpa"
+                textHumidityValue.text = response.daily?.get(0)?.humidity.toString() + " %"
+                textWindValue.text = response.daily?.get(0)?.wind_speed.toString() + " m/s"
 
-            binding.textCountryName.text = timezone
-            binding.textDate.text = formatedDate
-            binding.textTemperature.text = (response.current.temp.toInt() - 273.5).toString() + "°C"
-            binding.textCloudValue.text = response.daily?.get(0)?.pressure.toString() + " hpa"
-            binding.textHumidityValue.text = response.daily?.get(0)?.humidity.toString() + " %"
-            binding.textWindValue.text = response.daily?.get(0)?.wind_speed.toString() + " m/s"
+            }
 
-            if (getImageofTheDay().second != formatedDate) {
-                saveImageofTheDay(getRandomImage(), formatedDate)
+            clothesWeather = (response.current.temp.toInt() - 273.5).toInt()
+            if (sharedPreference.getImageofTheDay().second != formatedDate) {
+                sharedPreference.saveImageofTheDay(getRandomImage(clothesWeather), formatedDate)
                 /*
                 var randomImage = getRandomImage()
                 if( randomImage == getImageofTheDay().first){
@@ -101,6 +105,12 @@ class MainActivity : AppCompatActivity() {
                 }
                 */
             }
+            if (sharedPreference.getImageofTheDay().first != null) {
+                binding.imageClothes.setImageResource(sharedPreference.getImageofTheDay().first)
+            } else {
+                binding.imageClothes.setImageResource(getRandomImage(clothesWeather))
+            }
+
         }
     }
 
@@ -108,29 +118,12 @@ class MainActivity : AppCompatActivity() {
         Log.i("TAG", "onFailure: ${error.message}")
     }
 
-    private fun getRandomImage(): Int {
-        val images = ClothesImages(clothesWeather)
-        val list = images.ClothesList()
+    private fun getRandomImage(tempreture: Int): Int {
+        val images = ClothesImages(tempreture)
+        val list = images.getListOfClothesAccordingToTempreture()
         val randomIndex = Random.nextInt(list.size - 1)
         val randomImage = list[randomIndex]
         return randomImage
-    }
-
-    private fun saveImageofTheDay(image: Int, date: String) {
-        val sharedPreference =
-            this.getSharedPreferences(Constant.SHARED_PREFERINCES_NAME, MODE_PRIVATE)
-        val editor = sharedPreference.edit()
-        editor.putInt(Constant.SHARED_CLOTHES_KEY, image)
-        editor.putString(Constant.SHARED_DATE_KEY, date)
-        editor.apply()
-    }
-
-    private fun getImageofTheDay(): Pair<Int, String?> {
-        val sharedPreference =
-            this.getSharedPreferences(Constant.SHARED_PREFERINCES_NAME, MODE_PRIVATE)
-        val image = sharedPreference.getInt(Constant.SHARED_CLOTHES_KEY, 1)
-        val date = sharedPreference.getString(Constant.SHARED_DATE_KEY, "")
-        return Pair(image, date)
     }
 
     // location
@@ -223,23 +216,19 @@ class MainActivity : AppCompatActivity() {
                     ::onSuccessResponse,
                     ::onFailerResponse
                 )
-
+              //  getAddrss(lattitude, longtude)
+                getAddrss(30.855963, 31.1221095)
             }
         }
     }
 
     @SuppressLint("MissingPermission")
     private fun requestNewLocationData() {
-        // initialize locationrequest
-        // object with aproparate methods
         val mlocationRequest = LocationRequest()
         mlocationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         mlocationRequest.interval = 5
         mlocationRequest.fastestInterval = 0
         mlocationRequest.numUpdates = 1
-
-        // setting locationrequest
-        // on fusedlocationclient
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
         fusedLocationProviderClient.requestLocationUpdates(
             mlocationRequest, mLocationCallBack,
@@ -259,8 +248,31 @@ class MainActivity : AppCompatActivity() {
                 ::onSuccessResponse,
                 ::onFailerResponse
             )
+            getAddrss(30.855963, 31.1221095)
         }
     }
 
+    private fun getAddrss(lat: Double, long: Double) {
+        val geocoder: Geocoder
+        geocoder = Geocoder(this, Locale.getDefault())
+        try {
+            val addresses = geocoder.getFromLocation(
+                lat, long, 1
+            )
+
+            val address: String =
+                addresses!![0].getAddressLine(0)
+            val city: String = addresses!![0].locality
+            val state: String = addresses!![0].adminArea
+            val country: String = addresses!![0].countryName
+            val postalCode: String = addresses!![0].postalCode
+            val knownName: String = addresses!![0].featureName
+
+            binding.textCountryName.text = "$city _ $state"
+        } catch (e: Exception) {
+
+        }
+
+    }
 
 }
