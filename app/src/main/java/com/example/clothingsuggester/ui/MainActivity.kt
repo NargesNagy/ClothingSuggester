@@ -41,7 +41,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
         setUp()
     }
 
@@ -138,10 +137,6 @@ class MainActivity : AppCompatActivity() {
         } else {
             requestPermission()
         }
-    }
-
-    companion object {
-        private const val PERMISSION_REQUEST_ACESS_LOCATION = 100
     }
 
     private fun checkPermission(): Boolean {
@@ -275,4 +270,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    companion object {
+        private const val PERMISSION_REQUEST_ACESS_LOCATION = 100
+    }
 }
