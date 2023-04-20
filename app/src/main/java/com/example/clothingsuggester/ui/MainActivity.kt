@@ -211,8 +211,8 @@ class MainActivity : AppCompatActivity() {
                     ::onSuccessResponse,
                     ::onFailerResponse
                 )
-              //  getAddrss(lattitude, longtude)
-                getAddrss(30.855963, 31.1221095)
+                getAddrss(lattitude, longtude)
+               // getAddrss(30.855963, 31.1221095)
             }
         }
     }
@@ -243,7 +243,7 @@ class MainActivity : AppCompatActivity() {
                 ::onSuccessResponse,
                 ::onFailerResponse
             )
-            getAddrss(30.855963, 31.1221095)
+            getAddrss(lattitude, longtude)
         }
     }
 
